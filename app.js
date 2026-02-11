@@ -3,7 +3,7 @@
  */
 
 // REPLACE THIS with your deployed Google Apps Script Web App URL
-const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr_NAGCgM-MdxIjzL8hh65oGcNRdud1g4AI8ukKoW7yBAjkdbYPkAwKM9De10vuNk-/exec";
 
 // Elements
 const balanceDisp = document.getElementById('balanceDisp');
@@ -164,3 +164,4 @@ function formatCurrency(amount) {
         currency: 'USD',
     }).format(amount);
 }
+
