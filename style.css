@@ -1,0 +1,55 @@
+/* Custom styles for I-CAN-SAVE */
+:root {
+    --primary: #3b82f6;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --bg-dark: #0f172a;
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Modal Animations */
+#incomeModal, #expenseModal {
+    transition: opacity 0.3s ease;
+}
+
+#incomeModal[class*="hidden"], #expenseModal[class*="hidden"] {
+    display: none;
+    opacity: 0;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* History Item Entrance Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.history-item {
+    animation: slideIn 0.3s ease forwards;
+}
