@@ -21,17 +21,109 @@ let appData = {
     history: []
 };
 
+let currentPasscode = "";
+const CORRECT_PASSCODE = localStorage.getItem('app_passcode') || null; // Null means first time setup
+let inputPasscode = "";
+
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    initPasscode();
+
     // Check if script URL is set
     if (!SCRIPT_URL || SCRIPT_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) {
         historyList.innerHTML = `<div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl text-yellow-400 text-sm">
             Please set your <b>SCRIPT_URL</b> in <code>app.js</code> to connect to Google Sheets.
         </div>`;
     } else {
-        fetchData();
+        // Only fetch if passcode is already verified or not set (though we handle this in initPasscode)
+        if (sessionStorage.getItem('is_authenticated') === 'true' || !CORRECT_PASSCODE) {
+            fetchData();
+        }
     }
 });
+
+function initPasscode() {
+    const overlay = document.getElementById('passcodeOverlay');
+    const title = document.getElementById('passcodeTitle');
+    const msg = document.getElementById('passcodeMsg');
+
+    if (!CORRECT_PASSCODE) {
+        title.innerText = "Setup Passcode";
+        msg.innerText = "Create a 4-digit PIN for security";
+    }
+
+    if (sessionStorage.getItem('is_authenticated') === 'true') {
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => overlay.classList.add('hidden'), 500);
+    }
+}
+
+function pressKey(key) {
+    const dots = document.querySelectorAll('.dot');
+    const msg = document.getElementById('passcodeMsg');
+
+    if (key === 'back') {
+        inputPasscode = inputPasscode.slice(0, -1);
+    } else if (inputPasscode.length < 4) {
+        inputPasscode += key;
+    }
+
+    // Update dots
+    dots.forEach((dot, i) => {
+        if (i < inputPasscode.length) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+
+    if (inputPasscode.length === 4) {
+        setTimeout(verifyPasscode, 200);
+    }
+}
+
+function verifyPasscode() {
+    const overlay = document.getElementById('passcodeOverlay');
+    const dots = document.querySelectorAll('.dot');
+    const msg = document.getElementById('passcodeMsg');
+
+    if (!CORRECT_PASSCODE) {
+        // Initial setup
+        localStorage.setItem('app_passcode', inputPasscode);
+        sessionStorage.setItem('is_authenticated', 'true');
+        unlockApp();
+    } else if (inputPasscode === CORRECT_PASSCODE) {
+        // Success
+        sessionStorage.setItem('is_authenticated', 'true');
+        unlockApp();
+    } else {
+        // Error
+        dots.forEach(dot => dot.classList.add('error'));
+        msg.innerText = "Incorrect PIN. Try again.";
+        msg.classList.add('text-red-400');
+
+        setTimeout(() => {
+            inputPasscode = "";
+            dots.forEach(dot => {
+                dot.classList.remove('active', 'error');
+            });
+            msg.innerText = "Enter your passcode to continue";
+            msg.classList.remove('text-red-400');
+        }, 600);
+    }
+}
+
+function unlockApp() {
+    const overlay = document.getElementById('passcodeOverlay');
+    overlay.classList.add('opacity-0', 'pointer-events-none');
+    fetchData(); // Load data after unlocking
+    setTimeout(() => overlay.classList.add('hidden'), 500);
+}
+
+function lockApp() {
+    sessionStorage.removeItem('is_authenticated');
+    window.location.reload();
+}
 
 // Modal Control
 function toggleModal(id) {
@@ -164,4 +256,3 @@ function formatCurrency(amount) {
         currency: 'USD',
     }).format(amount);
 }
-

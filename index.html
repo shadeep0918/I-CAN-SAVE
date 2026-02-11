@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,26 +15,89 @@
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #0f172a; /* Dark Blue Gray */
+            background-color: #0f172a;
+            /* Dark Blue Gray */
             color: #f8fafc;
         }
+
         .glass {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .gradient-text {
             background: linear-gradient(135deg, #60a5fa 0%, #c084fc 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
+
 <body class="min-h-screen pb-12">
+    <!-- Passcode Overlay -->
+    <div id="passcodeOverlay"
+        class="fixed inset-0 z-[100] bg-[#0f172a] flex flex-col items-center justify-center p-6 transition-all duration-500">
+        <div class="mb-8 text-center">
+            <div
+                class="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h2 id="passcodeTitle" class="text-2xl font-bold gradient-text">Secure Access</h2>
+            <p id="passcodeMsg" class="text-slate-400 text-sm mt-2">Enter your passcode to continue</p>
+        </div>
+
+        <div class="flex gap-4 mb-8">
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-600 transition-all"></div>
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-600 transition-all"></div>
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-600 transition-all"></div>
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-600 transition-all"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 w-full max-w-[280px]">
+            <!-- Numbers 1-9 -->
+            <button onclick="pressKey('1')" class="keypad-btn">1</button>
+            <button onclick="pressKey('2')" class="keypad-btn">2</button>
+            <button onclick="pressKey('3')" class="keypad-btn">3</button>
+            <button onclick="pressKey('4')" class="keypad-btn">4</button>
+            <button onclick="pressKey('5')" class="keypad-btn">5</button>
+            <button onclick="pressKey('6')" class="keypad-btn">6</button>
+            <button onclick="pressKey('7')" class="keypad-btn">7</button>
+            <button onclick="pressKey('8')" class="keypad-btn">8</button>
+            <button onclick="pressKey('9')" class="keypad-btn">9</button>
+            <button class="w-full h-16"></button> <!-- Spacer -->
+            <button onclick="pressKey('0')" class="keypad-btn">0</button>
+            <button onclick="pressKey('back')"
+                class="flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414A2 2 0 0010.828 19h8.344a2 2 0 002-2V7a2 2 0 00-2-2h-8.344a2 2 0 00-1.414.586L3 12z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <!-- Header -->
-    <header class="p-6 text-center">
-        <h1 class="text-3xl font-bold gradient-text">I-CAN-SAVE</h1>
-        <p class="text-slate-400 text-sm mt-1">Smart Money Tracking</p>
+    <header class="p-6 relative flex justify-between items-center max-w-md mx-auto">
+        <div class="w-10"></div> <!-- Spacer for balance -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold gradient-text">I-CAN-SAVE</h1>
+            <p class="text-slate-400 text-sm mt-1">Smart Money Tracking</p>
+        </div>
+        <button onclick="lockApp()"
+            class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors bg-slate-800/30 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+        </button>
     </header>
 
     <main class="max-w-md mx-auto px-4 space-y-6">
@@ -41,12 +105,12 @@
         <section class="glass rounded-3xl p-6 shadow-xl relative overflow-hidden">
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500 opacity-10 rounded-full blur-3xl"></div>
             <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500 opacity-10 rounded-full blur-3xl"></div>
-            
+
             <div class="text-center relative z-10">
                 <p class="text-slate-400 text-sm">Total Balance</p>
                 <h2 id="balanceDisp" class="text-5xl font-bold my-2">$0.00</h2>
             </div>
-            
+
             <div class="grid grid-cols-2 gap-4 mt-6 relative z-10 border-t border-slate-700/50 pt-4">
                 <div class="text-center">
                     <p class="text-slate-400 text-xs uppercase tracking-wider">Income</p>
@@ -61,14 +125,18 @@
 
         <!-- Quick Actions -->
         <div class="flex gap-4">
-            <button onclick="toggleModal('incomeModal')" class="flex-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 py-3 rounded-2xl border border-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button onclick="toggleModal('incomeModal')"
+                class="flex-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 py-3 rounded-2xl border border-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Income
             </button>
-            <button onclick="toggleModal('expenseModal')" class="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-100 py-3 rounded-2xl border border-red-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button onclick="toggleModal('expenseModal')"
+                class="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-100 py-3 rounded-2xl border border-red-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                 </svg>
                 Expense
@@ -91,42 +159,55 @@
     </main>
 
     <!-- Modal: Add Monthly Income -->
-    <div id="incomeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+    <div id="incomeModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
         <div class="glass w-full max-w-sm rounded-3xl p-6 shadow-2xl">
             <h3 class="text-xl font-bold mb-4">Add Monthly Income</h3>
             <form id="incomeForm" class="space-y-4">
                 <div>
                     <label class="text-xs text-slate-400 block mb-1 px-1">Amount</label>
-                    <input type="number" step="0.01" name="amount" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0.00">
+                    <input type="number" step="0.01" name="amount" required
+                        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="0.00">
                 </div>
                 <div>
                     <label class="text-xs text-slate-400 block mb-1 px-1">Description</label>
-                    <input type="text" name="description" value="Monthly Allowance" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input type="text" name="description" value="Monthly Allowance" required
+                        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="toggleModal('incomeModal')" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl transition-colors">Cancel</button>
-                    <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 py-3 rounded-xl font-semibold transition-colors">Save</button>
+                    <button type="button" onclick="toggleModal('incomeModal')"
+                        class="flex-1 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl transition-colors">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 bg-green-500 hover:bg-green-600 py-3 rounded-xl font-semibold transition-colors">Save</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal: Add Expense -->
-    <div id="expenseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+    <div id="expenseModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
         <div class="glass w-full max-w-sm rounded-3xl p-6 shadow-2xl">
             <h3 class="text-xl font-bold mb-4">Record Expense</h3>
             <form id="expenseForm" class="space-y-4">
                 <div>
                     <label class="text-xs text-slate-400 block mb-1 px-1">Amount</label>
-                    <input type="number" step="0.01" name="amount" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="0.00">
+                    <input type="number" step="0.01" name="amount" required
+                        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        placeholder="0.00">
                 </div>
                 <div>
                     <label class="text-xs text-slate-400 block mb-1 px-1">Description</label>
-                    <input type="text" name="description" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Lunch, Coffee, etc.">
+                    <input type="text" name="description" required
+                        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        placeholder="Lunch, Coffee, etc.">
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="toggleModal('expenseModal')" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl transition-colors">Cancel</button>
-                    <button type="submit" class="flex-1 bg-red-500 hover:bg-red-600 py-3 rounded-xl font-semibold transition-colors">Record</button>
+                    <button type="button" onclick="toggleModal('expenseModal')"
+                        class="flex-1 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl transition-colors">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 bg-red-500 hover:bg-red-600 py-3 rounded-xl font-semibold transition-colors">Record</button>
                 </div>
             </form>
         </div>
@@ -143,4 +224,5 @@
         }
     </script>
 </body>
+
 </html>
