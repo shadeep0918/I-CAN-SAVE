@@ -24,8 +24,10 @@ function doGet(e) {
   const data = sheet.getDataRange().getValues();
   const headers = data.shift();
   
-  const transactions = data.map(row => {
+  // We keep track of the original row index (1-based, +2 because we shifted headers and index is 0-based)
+  const transactions = data.map((row, index) => {
     return {
+      id: index + 2, // Row number in the sheet
       timestamp: row[0],
       type: row[1],
       amount: row[2],
@@ -66,17 +68,38 @@ function doPost(e) {
     }
 
     const postData = JSON.parse(e.postData.contents);
-    sheet.appendRow([
-      new Date(),
-      postData.type,
-      postData.amount,
-      postData.description
-    ]);
+    
+    if (postData.action === 'update') {
+      const rowIndex = postData.id;
+      if (rowIndex) {
+        sheet.getRange(rowIndex, 2).setValue(postData.type);
+        sheet.getRange(rowIndex, 3).setValue(postData.amount);
+        sheet.getRange(rowIndex, 4).setValue(postData.description);
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Transaction updated" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    } else if (postData.action === 'delete') {
+      const rowIndex = postData.id;
+      if (rowIndex) {
+        sheet.deleteRow(rowIndex);
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Transaction deleted" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    } else {
+      // Default: Add new transaction
+      sheet.appendRow([
+        new Date(),
+        postData.type,
+        postData.amount,
+        postData.description
+      ]);
 
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Transaction saved" }))
-      .setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Transaction saved" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
+

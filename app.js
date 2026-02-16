@@ -1,5 +1,5 @@
 /**
- * I-CAN-SAVE App Logic
+ * I-CAN-SAVE App Logic - Premium Edition
  */
 
 // REPLACE THIS with your deployed Google Apps Script Web App URL
@@ -12,6 +12,8 @@ const expenseDisp = document.getElementById('expenseDisp');
 const historyList = document.getElementById('historyList');
 const incomeForm = document.getElementById('incomeForm');
 const expenseForm = document.getElementById('expenseForm');
+const editForm = document.getElementById('editForm');
+const balanceProgress = document.getElementById('balanceProgress');
 
 // State
 let appData = {
@@ -21,21 +23,18 @@ let appData = {
     history: []
 };
 
-let currentPasscode = "";
-const CORRECT_PASSCODE = localStorage.getItem('app_passcode') || null; // Null means first time setup
+const CORRECT_PASSCODE = localStorage.getItem('app_passcode') || null;
 let inputPasscode = "";
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initPasscode();
 
-    // Check if script URL is set
     if (!SCRIPT_URL || SCRIPT_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) {
-        historyList.innerHTML = `<div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl text-yellow-400 text-sm">
+        historyList.innerHTML = `<div class="p-6 bg-amber-500/10 border border-amber-500/20 rounded-[2rem] text-amber-400 text-sm glass">
             Please set your <b>SCRIPT_URL</b> in <code>app.js</code> to connect to Google Sheets.
         </div>`;
     } else {
-        // Only fetch if passcode is already verified or not set (though we handle this in initPasscode)
         if (sessionStorage.getItem('is_authenticated') === 'true' || !CORRECT_PASSCODE) {
             fetchData();
         }
@@ -48,8 +47,8 @@ function initPasscode() {
     const msg = document.getElementById('passcodeMsg');
 
     if (!CORRECT_PASSCODE) {
-        title.innerText = "Setup Passcode";
-        msg.innerText = "Create a 4-digit PIN for security";
+        title.innerText = "Setup Vault";
+        msg.innerText = "Create a 4-digit PIN to secure your data";
     }
 
     if (sessionStorage.getItem('is_authenticated') === 'true') {
@@ -60,21 +59,15 @@ function initPasscode() {
 
 function pressKey(key) {
     const dots = document.querySelectorAll('.dot');
-    const msg = document.getElementById('passcodeMsg');
-
     if (key === 'back') {
         inputPasscode = inputPasscode.slice(0, -1);
     } else if (inputPasscode.length < 4) {
         inputPasscode += key;
     }
 
-    // Update dots
     dots.forEach((dot, i) => {
-        if (i < inputPasscode.length) {
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('active');
-        }
+        if (i < inputPasscode.length) dot.classList.add('active');
+        else dot.classList.remove('active');
     });
 
     if (inputPasscode.length === 4) {
@@ -83,32 +76,26 @@ function pressKey(key) {
 }
 
 function verifyPasscode() {
-    const overlay = document.getElementById('passcodeOverlay');
     const dots = document.querySelectorAll('.dot');
     const msg = document.getElementById('passcodeMsg');
 
     if (!CORRECT_PASSCODE) {
-        // Initial setup
         localStorage.setItem('app_passcode', inputPasscode);
         sessionStorage.setItem('is_authenticated', 'true');
         unlockApp();
     } else if (inputPasscode === CORRECT_PASSCODE) {
-        // Success
         sessionStorage.setItem('is_authenticated', 'true');
         unlockApp();
     } else {
-        // Error
         dots.forEach(dot => dot.classList.add('error'));
-        msg.innerText = "Incorrect PIN. Try again.";
-        msg.classList.add('text-red-400');
+        msg.innerText = "Incorrect PIN code";
+        msg.classList.add('text-rose-400');
 
         setTimeout(() => {
             inputPasscode = "";
-            dots.forEach(dot => {
-                dot.classList.remove('active', 'error');
-            });
-            msg.innerText = "Enter your passcode to continue";
-            msg.classList.remove('text-red-400');
+            dots.forEach(dot => dot.classList.remove('active', 'error'));
+            msg.innerText = "Enter your vault passcode";
+            msg.classList.remove('text-rose-400');
         }, 600);
     }
 }
@@ -116,7 +103,7 @@ function verifyPasscode() {
 function unlockApp() {
     const overlay = document.getElementById('passcodeOverlay');
     overlay.classList.add('opacity-0', 'pointer-events-none');
-    fetchData(); // Load data after unlocking
+    fetchData();
     setTimeout(() => overlay.classList.add('hidden'), 500);
 }
 
@@ -129,9 +116,9 @@ function lockApp() {
 function toggleModal(id) {
     const modal = document.getElementById(id);
     modal.classList.toggle('hidden');
-    // Clear inputs if opening
     if (!modal.classList.contains('hidden')) {
-        modal.querySelector('input[name="amount"]').value = '';
+        const amountInput = modal.querySelector('input[name="amount"]');
+        if (amountInput) amountInput.value = '';
         if (id === 'expenseModal') {
             modal.querySelector('input[name="description"]').value = '';
         }
@@ -147,22 +134,23 @@ async function fetchData() {
         updateUI();
     } catch (error) {
         console.error("Error fetching data:", error);
-        // Show silent error toast or message
     }
 }
 
 // Update UI
 function updateUI() {
-    // Update Stats
     balanceDisp.innerText = formatCurrency(appData.balance);
-    incomeDisp.innerText = `+${formatCurrency(appData.totalIncome)}`;
-    expenseDisp.innerText = `-${formatCurrency(appData.totalExpenses)}`;
+    incomeDisp.innerText = formatCurrency(appData.totalIncome);
+    expenseDisp.innerText = formatCurrency(appData.totalExpenses);
 
-    // Update History
+    // Update Progress Bar
+    const percentage = appData.totalIncome > 0 ? (Math.max(0, appData.balance) / appData.totalIncome) * 100 : 0;
+    balanceProgress.style.width = `${percentage}%`;
+
     historyList.innerHTML = '';
 
     if (appData.history.length === 0) {
-        historyList.innerHTML = '<p class="text-slate-500 text-center py-8">No transactions yet.</p>';
+        historyList.innerHTML = '<p class="text-slate-500 text-center py-12 font-medium">Your timeline is empty</p>';
         return;
     }
 
@@ -171,28 +159,30 @@ function updateUI() {
         const isIncome = t.type === 'Income';
 
         const item = document.createElement('div');
-        item.className = 'history-item glass rounded-2xl p-4 flex justify-between items-center';
-        item.style.animationDelay = `${index * 50}ms`;
+        item.className = 'history-item glass rounded-3xl p-5 flex justify-between items-center group active:scale-95 transition-all cursor-pointer';
+        item.style.animationDelay = `${index * 60}ms`;
+        item.onclick = () => openEditModal(t);
 
         item.innerHTML = `
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full ${isIncome ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'} flex items-center justify-center">
-                    ${isIncome ?
-                '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>' :
-                '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>'
-            }
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl ${isIncome ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'} flex items-center justify-center shadow-inner">
+                    <i data-lucide="${isIncome ? 'trending-up' : 'trending-down'}" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h4 class="font-medium text-slate-200">${t.description}</h4>
-                    <p class="text-xs text-slate-500">${date}</p>
+                    <h4 class="font-bold text-slate-100">${t.description}</h4>
+                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">${date}</p>
                 </div>
             </div>
             <div class="text-right">
-                <p class="font-bold ${isIncome ? 'text-green-400' : 'text-slate-200'}">${isIncome ? '+' : '-'}${formatCurrency(t.amount)}</p>
+                <p class="font-black text-lg ${isIncome ? 'text-emerald-400' : 'text-slate-100'}">${isIncome ? '+' : '-'}${formatCurrency(t.amount, false)}</p>
+                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Tap to Edit</p>
             </div>
         `;
         historyList.appendChild(item);
     });
+
+    // Re-initialize icons for new elements
+    if (window.lucide) lucide.createIcons();
 }
 
 // Form Submissions
@@ -204,7 +194,6 @@ incomeForm.addEventListener('submit', async (e) => {
         amount: parseFloat(formData.get('amount')),
         description: formData.get('description')
     };
-
     await submitTransaction(data, 'incomeModal');
 });
 
@@ -216,16 +205,46 @@ expenseForm.addEventListener('submit', async (e) => {
         amount: parseFloat(formData.get('amount')),
         description: formData.get('description')
     };
-
     await submitTransaction(data, 'expenseModal');
 });
 
+editForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(editForm);
+    const data = {
+        action: 'update',
+        id: parseInt(formData.get('id')),
+        type: formData.get('type'),
+        amount: parseFloat(formData.get('amount')),
+        description: formData.get('description')
+    };
+    await submitTransaction(data, 'editModal');
+});
+
+function openEditModal(transaction) {
+    const modal = document.getElementById('editModal');
+    editForm.querySelector('input[name="id"]').value = transaction.id;
+    editForm.querySelector('input[name="type"]').value = transaction.type;
+    editForm.querySelector('input[name="amount"]').value = transaction.amount;
+    editForm.querySelector('input[name="description"]').value = transaction.description;
+    toggleModal('editModal');
+}
+
+async function deleteTransaction() {
+    const id = editForm.querySelector('input[name="id"]').value;
+    if (confirm("Are you sure you want to delete this transaction? This action cannot be undone.")) {
+        await submitTransaction({ action: 'delete', id: parseInt(id) }, 'editModal');
+    }
+}
+
 async function submitTransaction(data, modalId) {
-    // Optimistic UI update (optional - simplified here)
-    const submitBtn = document.querySelector(`#${modalId} button[type="submit"]`);
-    const originalText = submitBtn.innerText;
-    submitBtn.innerText = 'Saving...';
-    submitBtn.disabled = true;
+    const submitBtn = document.querySelector(`#${modalId} button[type="submit"]`) || document.querySelector(`#${modalId} .btn-premium`);
+    const originalText = submitBtn ? submitBtn.innerText : '';
+    
+    if (submitBtn) {
+        submitBtn.innerText = 'Syncing...';
+        submitBtn.disabled = true;
+    }
 
     try {
         const response = await fetch(SCRIPT_URL, {
@@ -235,24 +254,31 @@ async function submitTransaction(data, modalId) {
 
         const result = await response.json();
         if (result.status === 'success') {
-            toggleModal(modalId);
-            fetchData(); // Reload all data
+            if (document.getElementById(modalId).classList.contains('hidden') === false) {
+                toggleModal(modalId);
+            }
+            fetchData();
         } else {
-            alert("Error: " + result.message);
+            alert("Sync Error: " + result.message);
         }
     } catch (error) {
         console.error("Submission error:", error);
-        alert("Failed to save. Check your connection or SCRIPT_URL.");
+        alert("Failed to connect. Please check your internet.");
     } finally {
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
+        if (submitBtn) {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
     }
 }
 
 // Utilities
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
+function formatCurrency(amount, includeSymbol = true) {
+    const formatted = new Intl.NumberFormat('en-LK', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
     }).format(amount);
+    
+    return includeSymbol ? `Rs. ${formatted}` : formatted;
 }
+
