@@ -128,13 +128,37 @@ function toggleModal(id) {
 
 // Fetch Data
 async function fetchData() {
+    const loader = `<div class="p-12 text-center space-y-4">
+        <div class="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto"></div>
+        <p class="text-slate-500 font-medium">Connecting to Vault...</p>
+    </div>`;
+
+    // Only show loader if history is empty (first load)
+    if (appData.history.length === 0) {
+        historyList.innerHTML = loader;
+    }
+
     try {
         const response = await fetch(SCRIPT_URL);
+        if (!response.ok) throw new Error("Network response was not ok");
+
         const data = await response.json();
+
+        if (data.status === "error") {
+            throw new Error(data.message);
+        }
+
         appData = data;
         updateUI();
     } catch (error) {
         console.error("Error fetching data:", error);
+        historyList.innerHTML = `<div class="p-8 bg-rose-500/10 border border-rose-500/20 rounded-[2rem] text-rose-400 text-center glass">
+            <i data-lucide="alert-circle" class="w-10 h-10 mx-auto mb-3 opacity-50"></i>
+            <p class="font-bold">Sync Failed</p>
+            <p class="text-xs mt-1 opacity-70">${error.message}</p>
+            <button onclick="fetchData()" class="mt-4 px-6 py-2 bg-rose-500/20 rounded-xl text-xs font-bold uppercase tracking-wider">Retry</button>
+        </div>`;
+        if (window.lucide) lucide.createIcons();
     }
 }
 
@@ -143,6 +167,9 @@ function updateUI() {
     balanceDisp.innerText = formatCurrency(appData.balance);
     incomeDisp.innerText = formatCurrency(appData.totalIncome);
     expenseDisp.innerText = formatCurrency(appData.totalExpenses);
+
+    // Safety check for monthly breakdown
+    if (!appData.monthlyBreakdown) appData.monthlyBreakdown = {};
 
     // Update Monthly Selector
     const monthSelect = document.getElementById('monthSelect');
@@ -160,8 +187,9 @@ function updateUI() {
     months.forEach(m => {
         const option = document.createElement('option');
         option.value = m;
-        // Format YYYY-MM to Month YYYY
-        const [year, month] = m.split('-');
+        const parts = m.split('-');
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]);
         const date = new Date(year, month - 1);
         option.innerText = date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
         monthSelect.appendChild(option);
@@ -170,14 +198,9 @@ function updateUI() {
     if (currentSelection && months.includes(currentSelection)) {
         monthSelect.value = currentSelection;
     } else {
-        // Default to current month if exists, else first in list
         const now = new Date();
         const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        if (months.includes(thisMonth)) {
-            monthSelect.value = thisMonth;
-        } else {
-            monthSelect.value = months[0];
-        }
+        monthSelect.value = months.includes(thisMonth) ? thisMonth : months[0];
     }
 
     updateMonthlyUI();
