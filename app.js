@@ -20,7 +20,8 @@ let appData = {
     balance: 0,
     totalIncome: 0,
     totalExpenses: 0,
-    history: []
+    history: [],
+    monthlyBreakdown: {}
 };
 
 const CORRECT_PASSCODE = localStorage.getItem('app_passcode') || null;
@@ -143,6 +144,44 @@ function updateUI() {
     incomeDisp.innerText = formatCurrency(appData.totalIncome);
     expenseDisp.innerText = formatCurrency(appData.totalExpenses);
 
+    // Update Monthly Selector
+    const monthSelect = document.getElementById('monthSelect');
+    const currentSelection = monthSelect.value;
+    monthSelect.innerHTML = '';
+
+    const months = Object.keys(appData.monthlyBreakdown).sort().reverse();
+
+    if (months.length === 0) {
+        const now = new Date();
+        const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        months.push(thisMonth);
+    }
+
+    months.forEach(m => {
+        const option = document.createElement('option');
+        option.value = m;
+        // Format YYYY-MM to Month YYYY
+        const [year, month] = m.split('-');
+        const date = new Date(year, month - 1);
+        option.innerText = date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+        monthSelect.appendChild(option);
+    });
+
+    if (currentSelection && months.includes(currentSelection)) {
+        monthSelect.value = currentSelection;
+    } else {
+        // Default to current month if exists, else first in list
+        const now = new Date();
+        const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        if (months.includes(thisMonth)) {
+            monthSelect.value = thisMonth;
+        } else {
+            monthSelect.value = months[0];
+        }
+    }
+
+    updateMonthlyUI();
+
     // Update Progress Bar
     const percentage = appData.totalIncome > 0 ? (Math.max(0, appData.balance) / appData.totalIncome) * 100 : 0;
     balanceProgress.style.width = `${percentage}%`;
@@ -240,7 +279,7 @@ async function deleteTransaction() {
 async function submitTransaction(data, modalId) {
     const submitBtn = document.querySelector(`#${modalId} button[type="submit"]`) || document.querySelector(`#${modalId} .btn-premium`);
     const originalText = submitBtn ? submitBtn.innerText : '';
-    
+
     if (submitBtn) {
         submitBtn.innerText = 'Syncing...';
         submitBtn.disabled = true;
@@ -278,7 +317,16 @@ function formatCurrency(amount, includeSymbol = true) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(amount);
-    
+
     return includeSymbol ? `Rs. ${formatted}` : formatted;
+}
+
+function updateMonthlyUI() {
+    const monthSelect = document.getElementById('monthSelect');
+    const selectedMonth = monthSelect.value;
+    const data = appData.monthlyBreakdown[selectedMonth] || { income: 0, expense: 0 };
+
+    document.getElementById('monthIncomeDisp').innerText = formatCurrency(data.income);
+    document.getElementById('monthExpenseDisp').innerText = formatCurrency(data.expense);
 }
 

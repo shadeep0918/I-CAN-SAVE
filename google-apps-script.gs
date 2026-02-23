@@ -24,33 +24,56 @@ function doGet(e) {
   const data = sheet.getDataRange().getValues();
   const headers = data.shift();
   
-  // We keep track of the original row index (1-based, +2 because we shifted headers and index is 0-based)
-  const transactions = data.map((row, index) => {
-    return {
-      id: index + 2, // Row number in the sheet
-      timestamp: row[0],
-      type: row[1],
-      amount: row[2],
-      description: row[3]
-    };
-  }).reverse(); // Most recent first
-
   let totalIncome = 0;
   let totalExpenses = 0;
+  const monthlyData = {};
 
-  transactions.forEach(t => {
-    if (t.type === "Income") {
-      totalIncome += Number(t.amount);
-    } else if (t.type === "Expense") {
-      totalExpenses += Number(t.amount);
+  const transactions = data.map((row, index) => {
+    const timestamp = row[0];
+    const type = row[1];
+    const amount = Number(row[2]);
+    const description = row[3];
+    
+    // Global totals
+    if (type === "Income") {
+      totalIncome += amount;
+    } else if (type === "Expense") {
+      totalExpenses += amount;
     }
-  });
+
+    // Monthly totals
+    let dateObj = timestamp;
+    if (!(dateObj instanceof Date) && timestamp) {
+      dateObj = new Date(timestamp);
+    }
+
+    if (dateObj instanceof Date && !isNaN(dateObj.getTime())) {
+      const yearMonth = Utilities.formatDate(dateObj, ss.getSpreadsheetTimeZone(), "yyyy-MM");
+      if (!monthlyData[yearMonth]) {
+        monthlyData[yearMonth] = { income: 0, expense: 0 };
+      }
+      if (type === "Income") {
+        monthlyData[yearMonth].income += amount;
+      } else if (type === "Expense") {
+        monthlyData[yearMonth].expense += amount;
+      }
+    }
+
+    return {
+      id: index + 2, // Row number in the sheet
+      timestamp: timestamp,
+      type: type,
+      amount: amount,
+      description: description
+    };
+  }).reverse(); // Most recent first
 
   const response = {
     balance: totalIncome - totalExpenses,
     totalIncome: totalIncome,
     totalExpenses: totalExpenses,
-    history: transactions.slice(0, 50) // Return last 50 transactions
+    history: transactions.slice(0, 100), // Return last 100 transactions
+    monthlyBreakdown: monthlyData
   };
 
   return ContentService.createTextOutput(JSON.stringify(response))
