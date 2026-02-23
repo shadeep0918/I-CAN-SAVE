@@ -18,15 +18,17 @@
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #020617;
-            /* Even darker blue */
-            color: #f1f5f9;
+            background-color: #f8fafc;
+            /* Light Slate 50 */
+            color: #1e293b;
+            /* Slate 800 */
         }
 
         .glass {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
         }
 
         .premium-gradient {
@@ -34,7 +36,7 @@
         }
 
         .premium-text {
-            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -47,18 +49,19 @@
             border-radius: 50%;
             filter: blur(60px);
             z-index: 0;
-            opacity: 0.15;
+            opacity: 0.1;
         }
 
         .btn-premium {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
             transition: all 0.3s ease;
+            color: white;
         }
 
         .btn-premium:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.5);
         }
     </style>
 </head>
@@ -66,21 +69,21 @@
 <body class="min-h-screen pb-24 overflow-x-hidden">
     <!-- Passcode Overlay -->
     <div id="passcodeOverlay"
-        class="fixed inset-0 z-[100] bg-[#020617] flex flex-col items-center justify-center p-6 transition-all duration-500">
+        class="fixed inset-0 z-[100] bg-slate-50 flex flex-col items-center justify-center p-6 transition-all duration-500">
         <div class="mb-10 text-center">
             <div
                 class="w-24 h-24 premium-gradient rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-indigo-500/20 rotate-3">
                 <i data-lucide="lock" class="w-10 h-10 text-white"></i>
             </div>
             <h2 id="passcodeTitle" class="text-3xl font-extrabold premium-text">Secure Access</h2>
-            <p id="passcodeMsg" class="text-slate-400 text-sm mt-3">Enter your vault passcode</p>
+            <p id="passcodeMsg" class="text-slate-500 text-sm mt-3">Enter your vault passcode</p>
         </div>
 
         <div class="flex gap-5 mb-12">
-            <div class="dot w-4 h-4 rounded-full border-2 border-slate-700 transition-all"></div>
-            <div class="dot w-4 h-4 rounded-full border-2 border-slate-700 transition-all"></div>
-            <div class="dot w-4 h-4 rounded-full border-2 border-slate-700 transition-all"></div>
-            <div class="dot w-4 h-4 rounded-full border-2 border-slate-700 transition-all"></div>
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-300 transition-all"></div>
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-300 transition-all"></div>
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-300 transition-all"></div>
+            <div class="dot w-4 h-4 rounded-full border-2 border-slate-300 transition-all"></div>
         </div>
 
         <div class="grid grid-cols-3 gap-6 w-full max-w-[300px]">
@@ -96,7 +99,7 @@
             <div class="w-full h-16"></div>
             <button onclick="pressKey('0')" class="keypad-btn">0</button>
             <button onclick="pressKey('back')"
-                class="flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                class="flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
                 <i data-lucide="delete" class="w-8 h-8"></i>
             </button>
         </div>
@@ -106,65 +109,65 @@
     <header class="p-8 flex justify-between items-center max-w-md mx-auto">
         <div>
             <h1 class="text-3xl font-black tracking-tight premium-text uppercase">I-CAN-SAVE</h1>
-            <p class="text-slate-500 text-xs font-semibold tracking-widest mt-1">LKR MONEY TRACKER</p>
+            <p class="text-slate-400 text-xs font-semibold tracking-widest mt-1">LKR MONEY TRACKER</p>
         </div>
         <button onclick="lockApp()"
-            class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-white transition-all bg-slate-800/40 rounded-2xl hover:bg-slate-800/60 border border-slate-700/30">
+            class="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all bg-white rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100">
             <i data-lucide="log-out" class="w-5 h-5"></i>
         </button>
     </header>
 
     <main class="max-w-md mx-auto px-6 space-y-8">
         <!-- Dashboard Card -->
-        <section class="glass rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden border border-white/5">
+        <section class="glass rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden border border-white">
             <div class="card-blur -top-10 -right-10 bg-indigo-500"></div>
             <div class="card-blur -bottom-10 -left-10 bg-purple-500"></div>
 
             <div class="relative z-10">
-                <p class="text-slate-400 text-sm font-medium">Available Balance</p>
-                <h2 id="balanceDisp" class="text-4xl font-extrabold my-3 tracking-tight">Rs. 0.00</h2>
-                <div class="h-1.5 w-full bg-slate-800 rounded-full mt-6 overflow-hidden">
+                <p class="text-slate-500 text-sm font-medium">Available Balance</p>
+                <h2 id="balanceDisp" class="text-4xl font-extrabold my-3 tracking-tight text-slate-900">Rs. 0.00</h2>
+                <div class="h-1.5 w-full bg-slate-100 rounded-full mt-6 overflow-hidden">
                     <div id="balanceProgress" class="h-full premium-gradient transition-all duration-1000"
                         style="width: 0%"></div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-6 mt-8 relative z-10 pt-6 border-t border-white/5">
+            <div class="grid grid-cols-2 gap-6 mt-8 relative z-10 pt-6 border-t border-slate-100">
                 <div>
                     <div class="flex items-center gap-2 mb-1">
                         <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                        <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Income</p>
+                        <p class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Total Income</p>
                     </div>
-                    <p id="incomeDisp" class="text-emerald-400 font-bold text-lg">Rs. 0.00</p>
+                    <p id="incomeDisp" class="text-emerald-600 font-bold text-lg">Rs. 0.00</p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 mb-1">
                         <div class="w-2 h-2 rounded-full bg-rose-500"></div>
-                        <p class="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Total Expenses</p>
+                        <p class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Total Expenses</p>
                     </div>
-                    <p id="expenseDisp" class="text-rose-400 font-bold text-lg">Rs. 0.00</p>
+                    <p id="expenseDisp" class="text-rose-600 font-bold text-lg">Rs. 0.00</p>
                 </div>
             </div>
         </section>
 
         <!-- Monthly Breakdown -->
-        <section class="glass rounded-[2rem] p-6 border border-white/5 space-y-4">
+        <section class="glass rounded-[2rem] p-6 border border-white space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Monthly Breakdown</h3>
+                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Monthly Breakdown</h3>
                 <select id="monthSelect" onchange="updateMonthlyUI()"
-                    class="bg-slate-800 border-none rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
+                    class="bg-slate-100 border-none rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer text-slate-700">
                     <!-- Options injected by JS -->
                 </select>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-emerald-500/5 rounded-2xl p-4 border border-emerald-500/10">
-                    <p class="text-[10px] text-emerald-500/60 uppercase font-black mb-1 tracking-tighter">Income</p>
-                    <p id="monthIncomeDisp" class="text-emerald-400 font-black text-xl leading-none">Rs. 0.00</p>
+                <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+                    <p class="text-[10px] text-emerald-600 uppercase font-black mb-1 tracking-tighter">Income</p>
+                    <p id="monthIncomeDisp" class="text-emerald-600 font-black text-xl leading-none">Rs. 0.00</p>
                 </div>
-                <div class="bg-rose-500/5 rounded-2xl p-4 border border-rose-500/10">
-                    <p class="text-[10px] text-rose-500/60 uppercase font-black mb-1 tracking-tighter">Expenses</p>
-                    <p id="monthExpenseDisp" class="text-rose-400 font-black text-xl leading-none">Rs. 0.00</p>
+                <div class="bg-rose-50 rounded-2xl p-4 border border-rose-100">
+                    <p class="text-[10px] text-rose-600 uppercase font-black mb-1 tracking-tighter">Expenses</p>
+                    <p id="monthExpenseDisp" class="text-rose-600 font-black text-xl leading-none">Rs. 0.00</p>
                 </div>
             </div>
         </section>
@@ -172,14 +175,14 @@
         <!-- Quick Actions -->
         <div class="flex gap-4">
             <button onclick="toggleModal('incomeModal')"
-                class="flex-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 py-4 rounded-3xl border border-emerald-500/10 transition-all active:scale-95 flex flex-col items-center gap-2">
+                class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 py-4 rounded-3xl border border-emerald-100 transition-all active:scale-95 flex flex-col items-center gap-2 shadow-sm">
                 <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 flex items-center justify-center">
                     <i data-lucide="plus-circle" class="w-6 h-6"></i>
                 </div>
                 <span class="text-sm font-bold uppercase tracking-tight">Income</span>
             </button>
             <button onclick="toggleModal('expenseModal')"
-                class="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 py-4 rounded-3xl border border-rose-500/10 transition-all active:scale-95 flex flex-col items-center gap-2">
+                class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-600 py-4 rounded-3xl border border-rose-100 transition-all active:scale-95 flex flex-col items-center gap-2 shadow-sm">
                 <div class="w-10 h-10 rounded-2xl bg-rose-500/20 flex items-center justify-center">
                     <i data-lucide="minus-circle" class="w-6 h-6"></i>
                 </div>
@@ -190,46 +193,46 @@
         <!-- History -->
         <section>
             <div class="flex justify-between items-center mb-5 px-1">
-                <h3 class="text-xl font-bold tracking-tight">Timeline</h3>
+                <h3 class="text-xl font-bold tracking-tight text-slate-800">Timeline</h3>
                 <button onclick="fetchData()"
-                    class="w-10 h-10 bg-slate-800/40 rounded-xl flex items-center justify-center text-indigo-400 hover:text-indigo-300 transition-colors">
+                    class="w-10 h-10 bg-white shadow-md rounded-xl flex items-center justify-center text-indigo-600 hover:text-indigo-700 transition-colors border border-slate-100">
                     <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                 </button>
             </div>
             <div id="historyList" class="space-y-4">
                 <!-- Transactions will be injected here -->
-                <div class="animate-pulse bg-slate-800/40 h-20 rounded-3xl"></div>
-                <div class="animate-pulse bg-slate-800/40 h-20 rounded-3xl"></div>
-                <div class="animate-pulse bg-slate-800/40 h-20 rounded-3xl"></div>
+                <div class="animate-pulse bg-white border border-slate-100 h-20 rounded-3xl"></div>
+                <div class="animate-pulse bg-white border border-slate-100 h-20 rounded-3xl"></div>
+                <div class="animate-pulse bg-white border border-slate-100 h-20 rounded-3xl"></div>
             </div>
         </section>
     </main>
 
     <!-- Modal: Add Monthly Income -->
     <div id="incomeModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-md">
-        <div class="glass w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-white/10">
+        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-md">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-slate-100">
             <h3 class="text-2xl font-bold mb-6 premium-text">Add Income</h3>
             <form id="incomeForm" class="space-y-5">
                 <div>
                     <label
-                        class="text-[10px] text-slate-400 uppercase font-black mb-1.5 block px-1 tracking-widest">Amount
+                        class="text-[10px] text-slate-500 uppercase font-black mb-1.5 block px-1 tracking-widest">Amount
                         (LKR)</label>
                     <input type="number" step="0.01" name="amount" required
-                        class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg font-bold"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg font-bold text-slate-800"
                         placeholder="0.00">
                 </div>
                 <div>
                     <label
-                        class="text-[10px] text-slate-400 uppercase font-black mb-1.5 block px-1 tracking-widest">Description</label>
+                        class="text-[10px] text-slate-500 uppercase font-black mb-1.5 block px-1 tracking-widest">Description</label>
                     <input type="text" name="description" value="Monthly Allowance" required
-                        class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800">
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="toggleModal('incomeModal')"
-                        class="flex-1 bg-slate-800 hover:bg-slate-700 py-4 rounded-2xl font-bold transition-all">Cancel</button>
+                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold transition-all">Cancel</button>
                     <button type="submit"
-                        class="flex-1 btn-premium py-4 rounded-2xl font-bold transition-all">Save</button>
+                        class="flex-1 btn-premium py-4 rounded-2xl font-bold transition-all text-white">Save</button>
                 </div>
             </form>
         </div>
@@ -237,30 +240,30 @@
 
     <!-- Modal: Add Expense -->
     <div id="expenseModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-md">
-        <div class="glass w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-white/10">
-            <h3 class="text-2xl font-bold mb-6 text-rose-400">Record Expense</h3>
+        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-md">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-slate-100">
+            <h3 class="text-2xl font-bold mb-6 text-rose-600">Record Expense</h3>
             <form id="expenseForm" class="space-y-5">
                 <div>
                     <label
-                        class="text-[10px] text-slate-400 uppercase font-black mb-1.5 block px-1 tracking-widest">Amount
+                        class="text-[10px] text-slate-500 uppercase font-black mb-1.5 block px-1 tracking-widest">Amount
                         (LKR)</label>
                     <input type="number" step="0.01" name="amount" required
-                        class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-rose-500 text-lg font-bold"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-rose-500 text-lg font-bold text-slate-800"
                         placeholder="0.00">
                 </div>
                 <div>
                     <label
-                        class="text-[10px] text-slate-400 uppercase font-black mb-1.5 block px-1 tracking-widest">Description</label>
+                        class="text-[10px] text-slate-500 uppercase font-black mb-1.5 block px-1 tracking-widest">Description</label>
                     <input type="text" name="description" required
-                        class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-rose-500 text-slate-800"
                         placeholder="Lunch, Coffee, etc.">
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="toggleModal('expenseModal')"
-                        class="flex-1 bg-slate-800 hover:bg-slate-700 py-4 rounded-2xl font-bold transition-all">Cancel</button>
+                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold transition-all">Cancel</button>
                     <button type="submit"
-                        class="flex-1 bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/20 py-4 rounded-2xl font-bold transition-all">Record</button>
+                        class="flex-1 bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/20 py-4 rounded-2xl font-bold transition-all text-white">Record</button>
                 </div>
             </form>
         </div>
@@ -268,34 +271,34 @@
 
     <!-- Modal: Edit Transaction -->
     <div id="editModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-md">
-        <div class="glass w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-white/10">
+        class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-md">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border border-slate-100">
             <h3 class="text-2xl font-bold mb-6 premium-text">Edit Transaction</h3>
             <form id="editForm" class="space-y-5">
                 <input type="hidden" name="id">
                 <input type="hidden" name="type">
                 <div>
                     <label
-                        class="text-[10px] text-slate-400 uppercase font-black mb-1.5 block px-1 tracking-widest">Amount
+                        class="text-[10px] text-slate-500 uppercase font-black mb-1.5 block px-1 tracking-widest">Amount
                         (LKR)</label>
                     <input type="number" step="0.01" name="amount" required
-                        class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg font-bold">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg font-bold text-slate-800">
                 </div>
                 <div>
                     <label
-                        class="text-[10px] text-slate-400 uppercase font-black mb-1.5 block px-1 tracking-widest">Description</label>
+                        class="text-[10px] text-slate-500 uppercase font-black mb-1.5 block px-1 tracking-widest">Description</label>
                     <input type="text" name="description" required
-                        class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800">
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="deleteTransaction()"
-                        class="p-4 bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 rounded-2xl transition-all">
+                        class="p-4 bg-rose-50 text-rose-500 hover:bg-rose-100 rounded-2xl transition-all border border-rose-100">
                         <i data-lucide="trash-2" class="w-6 h-6"></i>
                     </button>
                     <button type="button" onclick="toggleModal('editModal')"
-                        class="flex-1 bg-slate-800 hover:bg-slate-700 py-4 rounded-2xl font-bold transition-all">Cancel</button>
+                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold transition-all">Cancel</button>
                     <button type="submit"
-                        class="flex-1 btn-premium py-4 rounded-2xl font-bold transition-all">Update</button>
+                        class="flex-1 btn-premium py-4 rounded-2xl font-bold transition-all text-white">Update</button>
                 </div>
             </form>
         </div>

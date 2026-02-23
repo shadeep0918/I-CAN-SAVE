@@ -3,7 +3,8 @@
     --primary: #6366f1;
     --success: #10b981;
     --danger: #f43f5e;
-    --bg-dark: #020617;
+    --bg-light: #f8fafc;
+    --text-dark: #1e293b;
 }
 
 body {
@@ -25,7 +26,8 @@ div[id$="Modal"].hidden {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 0px; /* Hide scrollbar but keep functionality */
+    width: 0px;
+    /* Hide scrollbar but keep functionality */
 }
 
 /* History Item Entrance Animation */
@@ -34,6 +36,7 @@ div[id$="Modal"].hidden {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -49,24 +52,24 @@ div[id$="Modal"].hidden {
     width: 100%;
     height: 4.5rem;
     border-radius: 1.5rem;
-    background-color: rgba(30, 41, 59, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
     font-size: 1.75rem;
     font-weight: 700;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     outline: none;
-    color: white;
-    backdrop-filter: blur(8px);
+    color: #1e293b;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .keypad-btn:hover {
-    background-color: rgba(99, 102, 241, 0.2);
+    background-color: #f1f5f9;
     border-color: rgba(99, 102, 241, 0.3);
 }
 
 .keypad-btn:active {
     transform: scale(0.92);
-    background-color: rgba(99, 102, 241, 0.4);
+    background-color: #e2e8f0;
 }
 
 .dot.active {
@@ -79,14 +82,31 @@ div[id$="Modal"].hidden {
 .dot.error {
     background-color: #f43f5e !important;
     border-color: #f43f5e !important;
-    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
 }
 
 @keyframes shake {
-    10%, 90% { transform: translate3d(-1px, 0, 0); }
-    20%, 80% { transform: translate3d(2px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-    40%, 60% { transform: translate3d(4px, 0, 0); }
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
 }
 
 /* Premium Card Effects */
@@ -96,12 +116,17 @@ div[id$="Modal"].hidden {
 
 /* Loading Shimmer */
 @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
 }
 
 .animate-pulse {
-    background: linear-gradient(90deg, rgba(30, 41, 59, 0.5) 25%, rgba(51, 65, 85, 0.5) 50%, rgba(30, 41, 59, 0.5) 75%);
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
     background-size: 200% 100%;
     animation: shimmer 2s infinite linear;
 }

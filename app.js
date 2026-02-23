@@ -129,8 +129,8 @@ function toggleModal(id) {
 // Fetch Data
 async function fetchData() {
     const loader = `<div class="p-12 text-center space-y-4">
-        <div class="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto"></div>
-        <p class="text-slate-500 font-medium">Connecting to Vault...</p>
+        <div class="w-10 h-10 border-4 border-indigo-600/10 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
+        <p class="text-slate-400 font-medium">Connecting to Vault...</p>
     </div>`;
 
     // Only show loader if history is empty (first load)
@@ -225,23 +225,23 @@ function updateUI() {
         const isIncome = t.type === 'Income';
 
         const item = document.createElement('div');
-        item.className = 'history-item glass rounded-3xl p-5 flex justify-between items-center group active:scale-95 transition-all cursor-pointer';
+        item.className = 'history-item bg-white border border-slate-100 rounded-3xl p-5 flex justify-between items-center group active:scale-95 transition-all cursor-pointer shadow-sm hover:shadow-md';
         item.style.animationDelay = `${index * 60}ms`;
         item.onclick = () => openEditModal(t);
 
         item.innerHTML = `
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl ${isIncome ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'} flex items-center justify-center shadow-inner">
+                <div class="w-12 h-12 rounded-2xl ${isIncome ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} flex items-center justify-center shadow-inner">
                     <i data-lucide="${isIncome ? 'trending-up' : 'trending-down'}" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h4 class="font-bold text-slate-100">${t.description}</h4>
-                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">${date}</p>
+                    <h4 class="font-bold text-slate-800">${t.description}</h4>
+                    <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">${date}</p>
                 </div>
             </div>
             <div class="text-right">
-                <p class="font-black text-lg ${isIncome ? 'text-emerald-400' : 'text-slate-100'}">${isIncome ? '+' : '-'}${formatCurrency(t.amount, false)}</p>
-                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Tap to Edit</p>
+                <p class="font-black text-lg ${isIncome ? 'text-emerald-600' : 'text-slate-800'}">${isIncome ? '+' : '-'}${formatCurrency(t.amount, false)}</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tap to Edit</p>
             </div>
         `;
         historyList.appendChild(item);
