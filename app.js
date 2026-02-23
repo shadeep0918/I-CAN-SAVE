@@ -164,9 +164,13 @@ async function fetchData() {
 
 // Update UI
 function updateUI() {
-    balanceDisp.innerText = formatCurrency(appData.balance);
-    incomeDisp.innerText = formatCurrency(appData.totalIncome);
-    expenseDisp.innerText = formatCurrency(appData.totalExpenses);
+    balanceDisp.innerText = formatCurrency(appData.balance || 0);
+    incomeDisp.innerText = formatCurrency(appData.totalIncome || 0);
+    expenseDisp.innerText = formatCurrency(appData.totalExpenses || 0);
+
+    // Safety check for monthly breakdown
+    if (!appData.monthlyBreakdown) appData.monthlyBreakdown = {};
+    if (!appData.history) appData.history = [];
 
     // Safety check for monthly breakdown
     if (!appData.monthlyBreakdown) appData.monthlyBreakdown = {};
