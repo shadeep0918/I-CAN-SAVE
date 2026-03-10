@@ -150,24 +150,47 @@
             </div>
         </section>
 
-        <!-- Monthly Breakdown -->
+        <!-- Statistics Breakdown -->
         <section class="glass rounded-[2rem] p-6 border border-white space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Monthly Breakdown</h3>
-                <select id="monthSelect" onchange="updateMonthlyUI()"
-                    class="bg-slate-100 border-none rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer text-slate-700">
-                    <!-- Options injected by JS -->
-                </select>
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/50">
+                        <button id="monthlyTab" onclick="setViewMode('monthly')"
+                            class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all bg-white shadow-sm text-indigo-600">Monthly</button>
+                        <button id="customTab" onclick="setViewMode('custom')"
+                            class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all text-slate-500 hover:text-slate-700">Custom</button>
+                    </div>
+
+                    <div id="monthSelectorContainer">
+                        <select id="monthSelect" onchange="updateBreakdownUI()"
+                            class="bg-slate-100 border-none rounded-xl px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer text-slate-700">
+                            <!-- Options injected by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="customDateContainer" class="hidden grid grid-cols-2 gap-3 py-1">
+                    <div>
+                        <label class="text-[8px] text-slate-400 uppercase font-black px-1 mb-1 block tracking-widest">From</label>
+                        <input type="date" id="startDate" onchange="updateBreakdownUI()"
+                            class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500/20">
+                    </div>
+                    <div>
+                        <label class="text-[8px] text-slate-400 uppercase font-black px-1 mb-1 block tracking-widest">To</label>
+                        <input type="date" id="endDate" onchange="updateBreakdownUI()"
+                            class="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500/20">
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
                     <p class="text-[10px] text-emerald-600 uppercase font-black mb-1 tracking-tighter">Income</p>
-                    <p id="monthIncomeDisp" class="text-emerald-600 font-black text-xl leading-none">Rs. 0.00</p>
+                    <p id="breakdownIncomeDisp" class="text-emerald-600 font-black text-xl leading-none">Rs. 0.00</p>
                 </div>
                 <div class="bg-rose-50 rounded-2xl p-4 border border-rose-100">
                     <p class="text-[10px] text-rose-600 uppercase font-black mb-1 tracking-tighter">Expenses</p>
-                    <p id="monthExpenseDisp" class="text-rose-600 font-black text-xl leading-none">Rs. 0.00</p>
+                    <p id="breakdownExpenseDisp" class="text-rose-600 font-black text-xl leading-none">Rs. 0.00</p>
                 </div>
             </div>
         </section>
