@@ -24,6 +24,10 @@ let appData = {
     monthlyBreakdown: {}
 };
 
+let viewMode = 'monthly'; // 'monthly' or 'custom'
+let startDate = '';
+let endDate = '';
+
 const CORRECT_PASSCODE = localStorage.getItem('app_passcode') || null;
 let inputPasscode = "";
 
@@ -175,7 +179,7 @@ function updateUI() {
     // Safety check for monthly breakdown
     if (!appData.monthlyBreakdown) appData.monthlyBreakdown = {};
 
-    // Update Monthly Selector
+    // Update Breakdown Selector
     const monthSelect = document.getElementById('monthSelect');
     const currentSelection = monthSelect.value;
     monthSelect.innerHTML = '';
@@ -207,7 +211,20 @@ function updateUI() {
         monthSelect.value = months.includes(thisMonth) ? thisMonth : months[0];
     }
 
-    updateMonthlyUI();
+    // Initialize custom dates if empty
+    if (!startDate || !endDate) {
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        
+        startDate = firstDay.toISOString().split('T')[0];
+        endDate = lastDay.toISOString().split('T')[0];
+        
+        document.getElementById('startDate').value = startDate;
+        document.getElementById('endDate').value = endDate;
+    }
+
+    updateBreakdownUI();
 
     // Update Progress Bar
     const percentage = appData.totalIncome > 0 ? (Math.max(0, appData.balance) / appData.totalIncome) * 100 : 0;
@@ -348,12 +365,62 @@ function formatCurrency(amount, includeSymbol = true) {
     return includeSymbol ? `Rs. ${formatted}` : formatted;
 }
 
-function updateMonthlyUI() {
-    const monthSelect = document.getElementById('monthSelect');
-    const selectedMonth = monthSelect.value;
-    const data = appData.monthlyBreakdown[selectedMonth] || { income: 0, expense: 0 };
+function setViewMode(mode) {
+    viewMode = mode;
+    const monthlyTab = document.getElementById('monthlyTab');
+    const customTab = document.getElementById('customTab');
+    const monthSelectorContainer = document.getElementById('monthSelectorContainer');
+    const customDateContainer = document.getElementById('customDateContainer');
 
-    document.getElementById('monthIncomeDisp').innerText = formatCurrency(data.income);
-    document.getElementById('monthExpenseDisp').innerText = formatCurrency(data.expense);
+    if (mode === 'monthly') {
+        monthlyTab.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
+        monthlyTab.classList.remove('text-slate-500');
+        customTab.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
+        customTab.classList.add('text-slate-500');
+        monthSelectorContainer.classList.remove('hidden');
+        customDateContainer.classList.add('hidden');
+    } else {
+        customTab.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
+        customTab.classList.remove('text-slate-500');
+        monthlyTab.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
+        monthlyTab.classList.add('text-slate-500');
+        monthSelectorContainer.classList.add('hidden');
+        customDateContainer.classList.remove('hidden');
+    }
+    updateBreakdownUI();
+}
+
+function updateBreakdownUI() {
+    let income = 0;
+    let expense = 0;
+
+    if (viewMode === 'monthly') {
+        const monthSelect = document.getElementById('monthSelect');
+        const selectedMonth = monthSelect.value;
+        const data = appData.monthlyBreakdown[selectedMonth] || { income: 0, expense: 0 };
+        income = data.income;
+        expense = data.expense;
+    } else {
+        startDate = document.getElementById('startDate').value;
+        endDate = document.getElementById('endDate').value;
+
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+
+            appData.history.forEach(t => {
+                const tDate = new Date(t.timestamp);
+                if (tDate >= start && tDate <= end) {
+                    if (t.type === 'Income') income += t.amount;
+                    else if (t.type === 'Expense') expense += t.amount;
+                }
+            });
+        }
+    }
+
+    document.getElementById('breakdownIncomeDisp').innerText = formatCurrency(income);
+    document.getElementById('breakdownExpenseDisp').innerText = formatCurrency(expense);
 }
 
