@@ -72,7 +72,7 @@ function doGet(e) {
     balance: totalIncome - totalExpenses,
     totalIncome: totalIncome,
     totalExpenses: totalExpenses,
-    history: transactions.slice(0, 100), // Return last 100 transactions
+    history: transactions, // Return all transactions for filtering
     monthlyBreakdown: monthlyData
   };
 
